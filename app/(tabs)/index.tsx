@@ -1,17 +1,78 @@
-import { Link } from "expo-router";
-import { Text, View } from "react-native";
+import { icons } from "@/constants/icons";
+import { images } from "@/constants/images";
+import { useRouter } from "expo-router";
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import SearchBar from "@/components/SearchBar";
+import useFetch from "@/services/useFetch";
+import { fetchMovies } from "@/services/api";
+import MovieCard from "@/components/MovieCard";
 
 export default function Index() {
+  const router = useRouter();
+  const {
+    data: movies,
+    error: moviesError,
+    loading: moviesLoading,
+} = useFetch(() => fetchMovies({ query: "" }));
+
+  console.log("movies", movies?.results);
   return (
-    <View className="flex-1 items-center justify-center bg-primary">
-      <Text className='text-5xl text-accent font-bold'>Hello</Text>
-      <Link href="/saved" className="mt-5 px-4 py-2 bg-accent rounded">
-        <Text className="text-primary text-lg font-semibold">saved</Text>
-      </Link>
-{/*       
-      <Link href="/movie/avangers" className="mt-5 px-4 py-2 bg-accent rounded">
-        <Text className="text-primary text-lg font-semibold">Avangers</Text>
-      </Link> */}
+    <View className="flex-1 bg-primary">
+      <Image source={images.bg} className="w-full absolute" />
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          minHeight: "100%",
+          paddingBottom: 10,
+        }}
+      >
+        <Image source={icons.logo} className="w-12 h-10 mt-20 mb-5 mx-auto" />
+        {moviesLoading ? (
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            className="mt-10 self-center"
+          />
+        ) : moviesError ? (
+          <Text>Error: {moviesError}</Text>
+        ) : (
+          movies && (
+            <View className="flex-1 mt-5">
+              <SearchBar
+                placeholder="Search for a movie"
+                onPress={() => router.push("/search")}
+              />
+              <View className="flex-1 p-3">
+                <Text className="text-white text-lg font-bold mt-5 mb-3">
+                  Latest Movies
+                </Text>
+                <FlatList
+                  data={movies?.results}
+                  renderItem={({ item }) => <MovieCard movie={item} />}
+                  keyExtractor={(item) => item.id.toString()}
+                  numColumns={3}
+                  columnWrapperStyle={{
+                    justifyContent: "flex-start",
+                    gap: 20,
+                    paddingRight: 5,
+                    marginBottom: 10,
+                  }}
+                  className="mt-2 pb-32"
+                  scrollEnabled={false}
+                />
+              </View>
+            </View>
+          )
+        )}
+      </ScrollView>
     </View>
   );
 }
