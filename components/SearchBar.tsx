@@ -3,7 +3,7 @@ import React from 'react'
 import { icons } from '@/constants/icons'
 import { router } from 'expo-router'
 
-const SearchBar = ({ placeholder, onPress }: { placeholder: string, onPress: () => void }) => {
+const SearchBar = ({ placeholder, onPress, value, onChangeText }: { placeholder: string, onPress?: () => void, value: string, onChangeText: (text: string) => void }) => {
   return (
     <View className="flex-row item-center bg-black/20 rounded-full px-5 py-4">
       <Image source={icons.search} className="size-5 mt-3" resizeMode='contain' tintColor='#ab8bff'/>
@@ -11,8 +11,8 @@ const SearchBar = ({ placeholder, onPress }: { placeholder: string, onPress: () 
         onPress={onPress}
         placeholder={placeholder}
         className="flex-1 text-white ml-2"
-        value= ""
-        onChangeText={() => {}}
+        value= {value}
+        onChangeText={onChangeText}
         placeholderTextColor="#A8B5DB"
       />
     </View>
